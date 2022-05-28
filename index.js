@@ -24,6 +24,7 @@ async function run() {
     await client.connect();
     const reviewCollection = client.db('nalamdb').collection('review');
     const productsCollection = client.db('nalamdb').collection('products');
+    const userCollection = client.db('nalamdb').collection('users');
     console.log('mongo db connected');
 
 
@@ -47,6 +48,28 @@ async function run() {
       const review = await reviewCollection.insertOne(data);
       res.send(review)
     })
+
+    // update
+    app.put('/user/:email', async (req, res) => {
+      const email = req.params.email
+      const filter = { email: email }
+      const user = req.body
+      const options = { upsert: true };
+      const doc = {
+          $set: {
+              name: user.name,
+              email: user.email,
+              bio: user.bio,
+              address: user.address,
+              institute: user.institute,
+              dateOfBirth: user.dateOfBirth,
+              phone: user.phone
+          }
+      }
+      const result = await userCollection.updateOne(filter, doc, options)
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: "1d" })
+      res.send({ result, token })
+  })
   }
 
   finally { }
