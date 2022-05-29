@@ -76,7 +76,7 @@ async function run() {
       res.send(products)
     })
 
-    
+
 
     app.get("/order", async (req, res) => {
       const email = req.query.email
@@ -84,7 +84,7 @@ async function run() {
       const result = await orderCollection.find(query).toArray()
       res.send(result)
 
-  })
+    })
 
     app.post("/order", async (req, res) => {
       const order = req.body
@@ -97,7 +97,7 @@ async function run() {
       const query = { _id: ObjectId(id) }
       const result = await orderCollection.findOne(query)
       res.send(result)
-  })
+    })
 
 
     app.delete("/order/:id", async (req, res) => {
@@ -108,6 +108,25 @@ async function run() {
     })
 
     // update
+
+
+    app.get("/user", async (req, res) => {
+      const query = {}
+      const result = await userCollection.find(query).toArray()
+      res.send(result)
+    })
+
+
+    app.put('/user/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: 'admin' },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+
     app.put('/user/:email', async (req, res) => {
       const email = req.params.email
       const filter = { email: email }
@@ -125,9 +144,32 @@ async function run() {
         }
       }
       const result = await userCollection.updateOne(filter, doc, options)
-      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: "1d" })
-      res.send({ result, token })
+      //const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: "1d" })
+      res.send({ result })
     })
+
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email
+      const query = { email: email }
+      const result = await userCollection.findOne(query)
+      res.send(result)
+    })
+
+    app.get('/user/admin/:email', async(req, res)=>{
+      const email = req.params.email;
+      const user = await userCollection.findOne({email: email});
+      const isAdmin = user.role === 'admin';
+      //console.log(isAdmin);
+      res.send({admin : isAdmin})
+    })
+
+    app.delete("/user/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await userCollection.deleteOne(query)
+      res.send(result)
+    })
+
   }
 
   finally { }
