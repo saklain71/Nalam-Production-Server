@@ -1,16 +1,17 @@
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 5000
-const dotenv = require('dotenv')
+require('dotenv').config();
 const cors = require('cors')
 const jwt = require('jsonwebtoken');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors())
 app.use(express.json())
 
-const uri = "mongodb+srv://nalam-tools:tZy0JmllyAsHjWRo@cluster0.imwsu.mongodb.net/?retryWrites=true&w=majority";
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.imwsu.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri,
   {
@@ -113,9 +114,6 @@ async function run() {
       res.send(result)
     })
 
-    // update
-
-
     app.get("/user", async (req, res) => {
       const query = {}
       const result = await userCollection.find(query).toArray()
@@ -150,7 +148,7 @@ async function run() {
         }
       }
       const result = await userCollection.updateOne(filter, doc, options)
-      //const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: "1d" })
+     
       res.send({ result })
     })
 
@@ -165,7 +163,7 @@ async function run() {
       const email = req.params.email;
       const user = await userCollection.findOne({email: email});
       const isAdmin = user.role === 'admin';
-      console.log(isAdmin);
+      //console.log(isAdmin);
       res.send({admin : isAdmin})
     })
 
