@@ -85,6 +85,12 @@ async function run() {
       res.send(result)
 
     })
+    app.get("/allorder", async (req, res) => {
+      const query = { }
+      const result = await orderCollection.find(query).toArray()
+      res.send(result)
+
+    })
 
     app.post("/order", async (req, res) => {
       const order = req.body
@@ -159,7 +165,7 @@ async function run() {
       const email = req.params.email;
       const user = await userCollection.findOne({email: email});
       const isAdmin = user.role === 'admin';
-      //console.log(isAdmin);
+      console.log(isAdmin);
       res.send({admin : isAdmin})
     })
 
