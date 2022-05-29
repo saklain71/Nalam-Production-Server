@@ -53,10 +53,10 @@ async function run() {
 
     app.patch("/products/:id", async (req, res) => {
       const id = req.params.id
-      console.log(id)
+      //console.log(id)
       const filter = { _id: ObjectId(id) }
       const quantity = req.body
-      console.log(quantity)
+      //console.log(quantity)
       const options = { upsert: true };
       const doc = {
         $set: {
@@ -71,12 +71,20 @@ async function run() {
     app.get("/products/:id", async (req, res) => {
       const id = req.params.id;
       //console.log(id);
-      const query = {_id:ObjectId(id)}
+      const query = { _id: ObjectId(id) }
       const products = await productsCollection.findOne(query)
       res.send(products)
     })
 
-    //post
+    
+
+    app.get("/order", async (req, res) => {
+      const email = req.query.email
+      const query = { email: email }
+      const result = await orderCollection.find(query).toArray()
+      res.send(result)
+
+  })
 
     app.post("/order", async (req, res) => {
       const order = req.body
@@ -84,7 +92,20 @@ async function run() {
       res.send(result)
     })
 
-    //
+    app.get("/order/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await orderCollection.findOne(query)
+      res.send(result)
+  })
+
+
+    app.delete("/order/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await orderCollection.deleteOne(query)
+      res.send(result)
+    })
 
     // update
     app.put('/user/:email', async (req, res) => {
